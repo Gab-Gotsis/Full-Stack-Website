@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Homepage</title>
+</head>
+<body>
+<!-- <element onload="myfunction_onload"> -->
+
+<label for="fname">Enter Student First Name:</label>
+<input type="text" id="fname" name="fname"><br><br>
+<label for="lname">Enter Student Last Name:</label>
+<input type="text" id="lname" name="lname"><br><br>
+<label for="year">Enter Student's Year:</label>
+<input type="number" id="year" value="0"><br><br>
+<input type="submit" onclick='getstudentinfo()' id="subbutton" value="Find Student Info">
+<input type="submit" onclick='editstudent()' id="editbutton" value="Edit Existing Student Info">
+<!-- <input type="submit" onclick='createstudent()' id="subbutton" value="Create Student">
+<input type="submit" onclick='deletestudent()' id="subbutton" value="Delete Student"> -->
+<input type="submit" onclick='changepage()' id="page" value="test loading a page">
+<label for="test" id="test">hello</label>
+
+<!-- the data in action is the url, values get added on -->
+<form action="" method="get">
+    <input type="hidden" name="foo" value="xyz">
+    <input type="submit">
+  </form>
+
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js">
+</script>
+
+<script>
+
+    // function createstudent(){
+    //     var fn = document.getElementById("fname").value
+    //     var ln = document.getElementById("lname").value
+    //     var year = document.getElementById("year").value
+    //     $.post("/createstudent", {fname: fn, lname: ln, yr: year}, success=function(response){
+    //         alert(response['fname'] + " " + response['lname'] + " has been created");
+    //     });
+    // }
+
+    function deletestudent(){
+        var fn = document.getElementById("fname").value
+        var ln = document.getElementById("lname").value
+        var year = document.getElementById("year").value
+        $.post("/deletestudent", {fname: fn, lname: ln, yr: year}, success=function(response){
+            alert(response['fname'] + " " + response['lname'] + " has been deleted");
+        });
+    }
+
+    function editstudent(){
+        var url = new URL(window.location.href + "editstudents");
+        window.location.href = url;
+    }
+
+    function getstudentinfo(){
+        var fn = document.getElementById("fname").value
+        var ln = document.getElementById("lname").value
+        var year = document.getElementById("year").value
+        // alert(window.location.href)
+        // $.post('/editstudents/createstudent', {fname: fn, lname: ln, yr: year}, success=function(response){
+        //     alert(response['fname'] + " " + response['lname'] + " " + response['year']);
+        // });
+        $.post("/studentinfo", {fname: fn, lname: ln, yr: year}, success=function(response){
+            document.getElementById("test").innerHTML = response['fname'] + " " + response['lname'] + " " + response['year'];
+        });
+        // var fn = document.getElementById("fname").value
+        // var ln = document.getElementById("lname").value
+        // $.ajax({
+        //     url: "/studentinfo",
+        //     type: "POST",
+        //     data: {fname: fn, lname: ln},
+        //     success: function(response){
+        //         document.getElementById("test").innerHTML = response['fname'] + " " + response['lname'];
+        //     }
+        // });
+        //this also works
+        
+    }
+    function changepage(){
+        var fn = document.getElementById("fname").value;
+        var ln = document.getElementById("lname").value;
+        var url = new URL(window.location.href + "studentpage");
+        url.searchParams.append('fn', fn);
+        url.searchParams.append('ln', ln);
+        window.location.href = url;
+        //new url needs to be exact otherwise shit breaks, very specific you need to give it raw data
+        //https://stackoverflow.com/questions/32153372/java-variable-in-url-not-working
+
+        //the above code just does this, which also works
+        //window.location.href = "/studentpage?fn=" + fn + "&ln=" + ln;
+
+        // $.ajax({
+        //     url:"",
+        //     context: document.body});}
+
+        //$("#test").load("/studentpage", {fname: fn, lname: ln});
+        //window.location.href = "/studentpage?fn=" + fn + "&ln=" + ln;
+        // $.ajax({
+        //     url: "/studentpage",
+        //     type: "POST",
+        //     data: {fname: fn, lname: ln},
+        //     context: document.body,
+        //     success: function(response){
+                
+        //     }
+        // });
+        // this works
+        //windows.alert("hi"); is pog
+        // document.querySelector('#test').innerHTML = '{{firstname}}';
+    }
+//            type: "POST",
+//data: {fname: fn, lname: ln},
+
+    function myfunction_clickevent2(){
+        $.ajax({
+            url:"/test2",
+            context: document.body});}
+    // function myfunction_clickevent3(){
+    //     // $.ajax({
+    //     //     url:"/test3",
+    //     //     context: document.body});
+    //     if (document.getElementById("female-option").checked) {
+    //         $.post("/test3", "Female");
+    //     }
+    //     else {
+    //         $.post("/test3", "Male");
+    //     }
+        // $.post("/test3", 'hi');
+    // }
+</script>
