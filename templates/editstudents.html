@@ -6,7 +6,7 @@
 </head>
 <body>
 <!-- <element onload="myfunction_onload"> -->
-
+<input type="submit" onclick='goback()' value="Go Back">
 <label for="fname">Student First Name:</label>
 <input type="text" id="fname" name="fname"><br><br>
 <label for="lname">Student Last Name:</label>
@@ -34,10 +34,19 @@
         var stars = document.getElementById("stars").value
         // alert(url)
         // alert(window.location.href)
-        $.post('/createstudent', {fname: fn, lname: ln, yr: year, ph: phone, st: stars}, success=function(response){
-            alert(response['fname'] + " " + response['lname'] + " " + response['year']);
-        });}
+        //, success=function(response)
+        $.post('/createstudent', {fname: fn, lname: ln, yr: year, ph: phone, st: stars});}
 
 
+    function deletestudent(){
+        var fn = document.getElementById("fname").value
+        var ln = document.getElementById("lname").value
+        var year = document.getElementById("year").value
+        $.post('/deletestudent', {fname: fn, lname: ln, yr: year});}
+
+      function goback(){
+        // bad that this is cardcoded :>
+        var url = new URL('http://127.0.0.1:5000/')
+        window.location.href = url;}
 </script>
 </body>
