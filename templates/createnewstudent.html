@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Student Edit Homepage</title>
+    <title>Create Student</title>
 </head>
 <body>
 <!-- <element onload="myfunction_onload"> -->
@@ -17,8 +17,7 @@
 <input type="text" id="phonenumber" name="phonenumber"><br><br>
 <label for="stars">Student Stars:</label>
 <input type="number" id="stars" value="0"><br><br>
-<input type="submit" onclick='updatestudent()' id="updatebutton" value="Update Existing Student Info">
-<input type="submit" onclick='createstudent()' id="createbutton" value="Create Student">
+<input type="submit" onclick='createstudent()' id="createbutton" value="Create New Student">
 <input type="submit" onclick='deletestudent()' id="delbutton" value="Delete Student">
 
 <form action="" method="get">
@@ -35,7 +34,10 @@
         // alert(url)
         // alert(window.location.href)
         //, success=function(response)
-        $.post('/createstudent', {fname: fn, lname: ln, yr: year, ph: phone, st: stars});}
+        $.post('/createstudent', {fname: fn, lname: ln, yr: year, ph: phone, st: stars}, success=function(response){
+            alert(response['fname'] + " " + response['lname'] + " has been created");
+        
+        });}
 
 
     function deletestudent(){

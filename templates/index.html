@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Student Homepage</title>
+    <title>Student Look Up</title>
 </head>
 <body>
 <!-- <element onload="myfunction_onload"> -->
@@ -16,8 +16,6 @@
 <input type="submit" onclick='getstudentinfo()' id="subbutton" value="Get Student Info">
 <input type="submit" onclick='editstudent()' id="editbutton" value="Edit Student">
 <input type="submit" onclick='createstudent()' id="createbutton" value="Create New Student">
-<!-- <input type="submit" onclick='createstudent()' id="subbutton" value="Create Student">
-<input type="submit" onclick='deletestudent()' id="subbutton" value="Delete Student"> -->
 <label for="test" id="test"></label> <br><br>
 <label for="fdback" id="fdback"></label>
 
@@ -90,12 +88,8 @@
             document.getElementById("deets").innerHTML = "Phone: " + response['phone'] + "<br>" + "Stars: " + response['stars'];
         });
     }
-    function changepage(){
-        var fn = document.getElementById("fname").value;
-        var ln = document.getElementById("lname").value;
-        var url = new URL(window.location.href + "studentpage");
-        url.searchParams.append('fn', fn);
-        url.searchParams.append('ln', ln);
+    function createstudent(){
+        var url = new URL(window.location.href + "createnewstudent");
         window.location.href = url;
         //new url needs to be exact otherwise shit breaks, very specific you need to give it raw data
         //https://stackoverflow.com/questions/32153372/java-variable-in-url-not-working
@@ -129,17 +123,5 @@
         $.ajax({
             url:"/test2",
             context: document.body});}
-
-            // var fn = document.getElementById("fname").value
-        // var ln = document.getElementById("lname").value
-        // $.ajax({
-        //     url: "/studentinfo",
-        //     type: "POST",
-        //     data: {fname: fn, lname: ln},
-        //     success: function(response){
-        //         document.getElementById("test").innerHTML = response['fname'] + " " + response['lname'];
-        //     }
-        // });
-        //this also works
 </script>
 

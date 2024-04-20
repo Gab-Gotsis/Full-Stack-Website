@@ -29,7 +29,8 @@ def get_student_info(fname, lname, year):
     ststars = students[0][1]
 
     cur.execute("""SELECT notes, date_given, weeks_homework_not_done FROM feedback
-                WHERE student_id = %s;""", (student_id))
+                WHERE student_id = %s
+                ORDER BY date_given ASC;""", (student_id))
     feedback = cur.fetchall()
 
     #this code removes trailing time (minutes seconds hours) from date
@@ -70,7 +71,7 @@ def displaystudentinfo():
     student_id = cur.fetchall()
     if id == []:
         print("Student not found")
-        return "Student not found"
+        return 0
     student_id = str(student_id[0][0])
 
     cur.execute("""SELECT phone, stars FROM students
@@ -80,7 +81,8 @@ def displaystudentinfo():
     ststars = students[0][1]
 
     cur.execute("""SELECT notes, date_given, weeks_homework_not_done FROM feedback
-                WHERE student_id = %s;""", (student_id))
+                WHERE student_id = %s
+                ORDER BY date_given ASC;""", (student_id))
     feedback = cur.fetchall()
 
     #this code removes trailing time (minutes seconds hours) from date
@@ -112,6 +114,9 @@ def changepage():
     #It makes sense to only be able to edit a week at a time, so a drop down menu that lets you sort for week is a good idea
     #that week becomes a textbox
     stuinfo = get_student_info(fname, lname, year)
+    if stuinfo == "Student not found":
+        print("Student not found")
+        return render_template('studentnotfound.html')
 
     return render_template('studentpage.html', fn = stuinfo['fname'], ln = stuinfo['lname'], yr = stuinfo['year'], ph = stuinfo['phone'], st = stuinfo['stars'], fb = stuinfo['feedback'])
     # if request.method == 'POST':
@@ -125,9 +130,9 @@ def changepage():
     print("This was called")
     
 #this only renders template, if they go there...
-@app.route('/editstudents')
-def editstudents():
-    return render_template('editstudents.html')
+@app.route('/createnewstudent')
+def createnewstudent():
+    return render_template('createnewstudent.html')
 
 @app.route('/createstudent', methods=['GET', 'POST'])
 def createstudent():
@@ -155,6 +160,9 @@ def deletestudent():
     cur.execute("""SELECT id FROM students
                 WHERE firstname = %s AND lastname = %s AND year = %s;""", (fname, lname, year))
     student_id = cur.fetchall()
+    if student_id == []:
+        print("Student not found")
+        return 0
     student_id = student_id[0][0]
     print(student_id)
     cur.execute("""DELETE FROM feedback
@@ -167,29 +175,85 @@ def deletestudent():
     return {'fname': fname, 'lname': lname, 'year': year}
 
 
-
-
-@app.route('/test2')
-def test2():
+@app.route("/changestudentinfo", methods=['GET', 'POST'])
+def changestudentinfo():
+    if request.method == 'POST':
+        fname = request.form['fname']
+        lname = request.form['lname']
+        year = request.form['yr']
+        phone = request.form['ph']
+        stars = request.form['st']
+        ogfname = request.form['ogfn']
+        oglname = request.form['ogln']
+        ogyear = request.form['ogyear']
     cur = conn.cursor()
-    cur.execute("""INSERT INTO test_table(sometext)
-                VALUES ('This is a test');
-                """)
+    cur.execute("""SELECT id FROM students
+            WHERE firstname = %s AND lastname = %s AND year = %s;""", (ogfname, oglname, ogyear))
+    student_id = cur.fetchall()
+    student_id = student_id[0][0]
+    cur.execute("""UPDATE students
+                SET firstname = %s, lastname = %s, year = %s, phone = %s, stars = %s
+                WHERE id = %s;""", (fname, lname, year, phone, stars, student_id))
     conn.commit()
     cur.close()
-    win32api.MessageBox(0, 'Hello, World!', 'Running a pythonscript via javascript on button hit!', 0x00001000)
-    return render_template('index.html')
-#can pass in a variable to the route, and then use that variable in the template, but use this otherwise
+    return {'fname': fname, 'lname': lname, 'year': year, 'phone': phone, 'stars': stars}
 
-@app.route('/test3', methods=['GET', 'POST'])
-def test3():
+
+@app.route("/addfeedback", methods=['GET', 'POST'])
+def addfeedback():
     if request.method == 'POST':
-        form = request.form
-        print(form)
-    
-    print("This works")
-    return render_template('index.html')
+        fname = request.form['fname']
+        lname = request.form['lname']
+        year = request.form['yr']
+        feedback = request.form['fb']
+        date_given = date.today()
+        weeks_homework_not_done = request.form['weeks']
+    cur = conn.cursor()
+    cur.execute("""SELECT id FROM students
+            WHERE firstname = %s AND lastname = %s AND year = %s;""", (fname, lname, year))
+    student_id = cur.fetchall()
+    student_id = student_id[0][0]
+    cur.execute("""INSERT INTO feedback(student_id, notes, date_given, weeks_homework_not_done)
+                VALUES (%s, %s, %s, %s);""", (student_id, feedback, date_given, weeks_homework_not_done))
+    conn.commit()
+    cur.close()
+    return {'fname': fname, 'lname': lname, 'year': year, 'notes': feedback, 'date_given': str(date_given), 'weeks_homework_not_done': weeks_homework_not_done}
 
+@app.route("/editfeedback", methods=['GET', 'POST'])
+def editfeedback():
+    fname = request.args.get('fn', None)
+    lname = request.args.get('ln', None)
+    year = request.args.get('yr', None)
+
+    stuinfo = get_student_info(fname, lname, year)
+    if stuinfo == "Student not found":
+        print("Student not found")
+        return render_template('studentnotfound.html')
+    
+    return render_template('editfeedback.html', fn = fname, ln = lname, yr = year, fb = stuinfo['feedback'])
+
+@app.route("/updatefeedback", methods=['GET', 'POST'])
+def updatefeedback():
+    if request.method == 'POST':
+        fname = request.form['fname']
+        lname = request.form['lname']
+        year = request.form['yr']
+        feedback = request.form['fb']
+        week = request.form['week']
+    cur = conn.cursor()
+    cur.execute("""SELECT id FROM students
+            WHERE firstname = %s AND lastname = %s AND year = %s;""", (fname, lname, year))
+    student_id = cur.fetchall()
+    if student_id == []:
+        print("Student not found")
+        return 0
+    student_id = student_id[0][0]
+    cur.execute("""UPDATE feedback
+                SET notes = %s
+                WHERE student_id = %s AND date_given = %s;""", (feedback, student_id, week))
+    conn.commit()
+    cur.close()
+    return {'fname': fname, 'lname': lname, 'year': year, 'notes': feedback, 'date_given': week}
 
 if __name__ == '__main__':
     app.run(debug=True)
