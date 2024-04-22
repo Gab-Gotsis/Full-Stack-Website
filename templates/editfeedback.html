@@ -3,12 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Edit Feedback</title>
-    <style type="text/css"> 
-      .br { 
-          display: block; 
-          margin-bottom: 0.5em; 
-      }
-    </style> 
+    <link href="/styles/style.css" type="text/css" rel="stylesheet">
 </head>
 <body>
 <!-- <element onload="myfunction_onload"> -->
@@ -25,6 +20,7 @@
 
 <textarea id="feedback" name="new feedback" rows="4" cols="50"></textarea><span class="br"></span> 
 <input type="submit" onclick='submitfeedbackchange()' id="subbutton" value="Submit Feedback Change"><span class="br"></span>
+<input type="submit" onclick="deletefeedback()" id="delbutton" value="Delete Selected Feedback"><span class="br"></span>
 
 <p id="feedbackp"></p>
 <p id="weekshomeworknotdone"></p>
@@ -44,6 +40,7 @@
           //works!
     $.post("/studentinfo", {fname: fn, lname: ln, yr: year}, success=function(response){
         feedback = ""
+        lastweek = ""
         for (var i = 0; i < response['feedback'].length; i++){
             feedback += response['feedback'][i][1] + " Feedback: " + response['feedback'][i][0] + "<br>";
         }
@@ -78,6 +75,16 @@
     var feedbackweek = document.getElementById("feedbackweek").value
     var feedback = document.getElementById("feedback").value
     $.post("/updatefeedback", {fname: fn, lname: ln, yr: year, fb: feedback, week: feedbackweek}, success=function(response){
+        getstudentinfo();
+    });
+  }
+
+  function deletefeedback(){
+    var fn = document.getElementById("fname").innerHTML
+    var ln = document.getElementById("lname").innerHTML
+    var year = document.getElementById("year").innerHTML
+    var feedbackweek = document.getElementById("feedbackweek").value
+    $.post("/deletefeedback", {fname: fn, lname: ln, yr: year, week: feedbackweek}, success=function(response){
         getstudentinfo();
     });
   }

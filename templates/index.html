@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"> 
+<!-- <div class="box theme-a"></div> -->
 <head>
     <meta charset="UTF-8">
     <title>Student Look Up</title>
+    <link href="/styles/style.css" type="text/css" rel="stylesheet">
 </head>
+
 <body>
 <!-- <element onload="myfunction_onload"> -->
 
@@ -16,34 +19,20 @@
 <input type="submit" onclick='getstudentinfo()' id="subbutton" value="Get Student Info">
 <input type="submit" onclick='editstudent()' id="editbutton" value="Edit Student">
 <input type="submit" onclick='createstudent()' id="createbutton" value="Create New Student">
-<label for="test" id="test"></label> <br><br>
-<label for="fdback" id="fdback"></label>
+<label id="test"></label> <br><br>
+<label id="fdback"></label>
 
-<!-- the data in action is the url, values get added on -->
-<!-- <form action="" method="get">
-    <input type="hidden" name="foo" value="xyz">
-    <input type="submit">
-  </form>
-
-</body> -->
 <p id="deets"></p>
 <p id="feedback"></p>
 <p id="weekshomeworknotdone"></p>
 
+</body>
+
+<!-- actually important -->
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js">
-</script>
+</script> 
 
 <script>
-
-    // function createstudent(){
-    //     var fn = document.getElementById("fname").value
-    //     var ln = document.getElementById("lname").value
-    //     var year = document.getElementById("year").value
-    //     $.post("/createstudent", {fname: fn, lname: ln, yr: year}, success=function(response){
-    //         alert(response['fname'] + " " + response['lname'] + " has been created");
-    //     });
-    // }
-
     function deletestudent(){
         var fn = document.getElementById("fname").value
         var ln = document.getElementById("lname").value
@@ -54,10 +43,6 @@
     }
 
     function editstudent(){
-        // var url = new URL(window.location.href + "editstudents");
-        // window.location.href = url;
-        //idea, pass year name and last name to the edit page, those values get filled in the data
-        //change student page
         var fn = document.getElementById("fname").value;
         var ln = document.getElementById("lname").value;
         var year = document.getElementById("year").value;

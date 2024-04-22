@@ -1,8 +1,8 @@
 import win32api
-from flask import Flask, render_template, url_for, request, jsonify, redirect
+from flask import Flask, render_template, url_for, request, jsonify, redirect, send_from_directory
 from datetime import date
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 import psycopg2 as sql
 
 conn = sql.connect(
@@ -19,7 +19,7 @@ def get_student_info(fname, lname, year):
     student_id = cur.fetchall()
     if id == []:
         print("Student not found")
-        return "Student not found"
+        return 0
     student_id = str(student_id[0][0])
 
     cur.execute("""SELECT phone, stars FROM students
@@ -106,17 +106,10 @@ def changepage():
     lname = request.args.get('ln', None)
     year = request.args.get('yr', None)
 
-    #ignore how the names are messed up we can fix that later asdjka
-    # okay so what we need to do, get student data here, pass it to the edit page and load it in the form
-    # once edited, we hit a button, and the values are passed to a new function, then saved.
-    #make a helper function that gets students info from the fname, lname and year. helper it will help
-    #last thing to do, change the feedbackdisplay so it can be edited
-    #It makes sense to only be able to edit a week at a time, so a drop down menu that lets you sort for week is a good idea
-    #that week becomes a textbox
     stuinfo = get_student_info(fname, lname, year)
     if stuinfo == "Student not found":
         print("Student not found")
-        return render_template('studentnotfound.html')
+        return 0
 
     return render_template('studentpage.html', fn = stuinfo['fname'], ln = stuinfo['lname'], yr = stuinfo['year'], ph = stuinfo['phone'], st = stuinfo['stars'], fb = stuinfo['feedback'])
     # if request.method == 'POST':
@@ -213,6 +206,9 @@ def addfeedback():
             WHERE firstname = %s AND lastname = %s AND year = %s;""", (fname, lname, year))
     student_id = cur.fetchall()
     student_id = student_id[0][0]
+    if student_id == []:
+        print("Student not found")
+        return 0
     cur.execute("""INSERT INTO feedback(student_id, notes, date_given, weeks_homework_not_done)
                 VALUES (%s, %s, %s, %s);""", (student_id, feedback, date_given, weeks_homework_not_done))
     conn.commit()
@@ -254,6 +250,33 @@ def updatefeedback():
     conn.commit()
     cur.close()
     return {'fname': fname, 'lname': lname, 'year': year, 'notes': feedback, 'date_given': week}
+
+
+@app.route("/deletefeedback", methods=['GET', 'POST'])
+def deletefeedback():
+    if request.method == 'POST':
+        fname = request.form['fname']
+        lname = request.form['lname']
+        year = request.form['yr']
+        week = request.form['week']
+    cur = conn.cursor()
+    cur.execute("""SELECT id FROM students
+            WHERE firstname = %s AND lastname = %s AND year = %s;""", (fname, lname, year))
+    student_id = cur.fetchall()
+    if student_id == []:
+        print("Student not found")
+        return 0
+    student_id = student_id[0][0]
+    cur.execute("""DELETE FROM feedback
+                WHERE student_id = %s AND date_given = %s;""", (student_id, week))
+    conn.commit()
+    cur.close()
+    return {'fname': fname, 'lname': lname, 'year': year, 'date_given': week}
+
+@app.route('/styles/<path:path>', methods=['GET', 'POST'])
+def send_report(path):
+    print(path)
+    return send_from_directory('styles', path)
 
 if __name__ == '__main__':
     app.run(debug=True)
