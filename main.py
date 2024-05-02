@@ -9,7 +9,7 @@ conn = sql.connect(
     database = "postgres", 
     user = "postgres", 
     host = 'localhost',
-    password = "Gcubed38",
+    password = "",
     port = 5432)
 
 def get_student_info(fname, lname, year):
