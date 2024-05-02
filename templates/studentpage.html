@@ -22,10 +22,7 @@
 <input type="submit" onclick='changestudentinfo()' id="subbutton" value="Submit changes to student info">
 <input type="submit" onclick='deletestudent()' id="delbutton" value="Delete Student">
 
-<!-- <form action="{{ url_for('index') }}" method="POST"></form>
-  just format this now! and do the feedback manipulation, feedback needs to be in a text box that can be edited
 
-  </form> -->
   <p id="feedbackp"></p>
   <p id="weekshomeworknotdone"></p>
   <var id="origname" hidden="true">{{fn}}</var>
@@ -61,7 +58,8 @@
 
 
         document.getElementById("feedbackp").innerHTML = feedback;
-        document.getElementById("weekshomeworknotdone").innerHTML = "Weeks of Homework Not Done: " + lastweek;  
+        document.getElementById("weekshomeworknotdone").innerHTML = "Weeks of Homework Not Done: " + lastweek; 
+        document.getElementById("weeksdone").value = lastweek; 
     });
   }
   function addfeedback(){

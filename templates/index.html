@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en"> 
-<!-- <div class="box theme-a"></div> -->
 <head>
     <meta charset="UTF-8">
     <title>Student Look Up</title>
@@ -8,7 +7,6 @@
 </head>
 
 <body>
-<!-- <element onload="myfunction_onload"> -->
 
 <label for="fname">Enter Student First Name:</label>
 <input type="text" id="fname" name="fname"><br><br>
@@ -76,33 +74,9 @@
     function createstudent(){
         var url = new URL(window.location.href + "createnewstudent");
         window.location.href = url;
-        //new url needs to be exact otherwise shit breaks, very specific you need to give it raw data
+        //new url needs to be exact otherwise breaks, very specific you need to give it raw data
         //https://stackoverflow.com/questions/32153372/java-variable-in-url-not-working
-
-        //the above code just does this, which also works
-        //window.location.href = "/studentpage?fn=" + fn + "&ln=" + ln;
-
-        // $.ajax({
-        //     url:"",
-        //     context: document.body});}
-
-        //$("#test").load("/studentpage", {fname: fn, lname: ln});
-        //window.location.href = "/studentpage?fn=" + fn + "&ln=" + ln;
-        // $.ajax({
-        //     url: "/studentpage",
-        //     type: "POST",
-        //     data: {fname: fn, lname: ln},
-        //     context: document.body,
-        //     success: function(response){
-                
-        //     }
-        // });
-        // this works
-        //windows.alert("hi"); is pog
-        // document.querySelector('#test').innerHTML = '{{firstname}}';
     }
-//            type: "POST",
-//data: {fname: fn, lname: ln},
 
     function myfunction_clickevent2(){
         $.ajax({

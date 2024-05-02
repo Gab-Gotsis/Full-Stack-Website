@@ -32,9 +32,6 @@
         var year = document.getElementById("year").value
         var phone = document.getElementById("phonenumber").value
         var stars = document.getElementById("stars").value
-        // alert(url)
-        // alert(window.location.href)
-        //, success=function(response)
         $.post('/createstudent', {fname: fn, lname: ln, yr: year, ph: phone, st: stars}, success=function(response){
             alert(response['fname'] + " " + response['lname'] + " has been created");
         

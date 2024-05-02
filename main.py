@@ -8,7 +8,7 @@ import psycopg2 as sql
 conn = sql.connect(
     database = "postgres", 
     user = "postgres", 
-    host= 'localhost',
+    host = 'localhost',
     password = "Gcubed38",
     port = 5432)
 
@@ -62,9 +62,7 @@ def displaystudentinfo():
         year =  request.form['yr']
 
     cur = conn.cursor()
-    #can do a lot here. i think we run a query to get the student id and info. then use
-    #that id to get the feedback info. no biggie, we did it for delete
-    #yeah, remodle as above.
+
 
     cur.execute("""SELECT id FROM students
             WHERE firstname = %s AND lastname = %s AND year = %s;""", (fname, lname, year))
@@ -90,11 +88,6 @@ def displaystudentinfo():
         feedback[i] = list(feedback[i])
         feedback[i][1] = feedback[i][1].strftime('%d-%m-%Y')
 
-    #change date to not include time
-    
-
-    #i think we just pass feedback back, and handle it there
-
     conn.commit()
     cur.close()
 
@@ -112,16 +105,7 @@ def changepage():
         return 0
 
     return render_template('studentpage.html', fn = stuinfo['fname'], ln = stuinfo['lname'], yr = stuinfo['year'], ph = stuinfo['phone'], st = stuinfo['stars'], fb = stuinfo['feedback'])
-    # if request.method == 'POST':
-    #     form = request.form
-    #     fname = request.form['fname']
-    #     lname = request.form['lname']
-    #     print(form)
-    
-    #this pulls the args we attached to the url, renders them with the template
 
-    print("This was called")
-    
 #this only renders template, if they go there...
 @app.route('/createnewstudent')
 def createnewstudent():
@@ -164,7 +148,6 @@ def deletestudent():
                 WHERE firstname = %s AND lastname = %s AND year = %s;""", (fname, lname, year))
     conn.commit()
     cur.close()
-    #this works
     return {'fname': fname, 'lname': lname, 'year': year}
 
 
@@ -275,20 +258,8 @@ def deletefeedback():
 
 @app.route('/styles/<path:path>', methods=['GET', 'POST'])
 def send_report(path):
-    print(path)
     return send_from_directory('styles', path)
 
 if __name__ == '__main__':
     app.run(debug=True)
     conn.close()
-
-# cur = conn.cursor()
-    # cur.execute("""SELECT * FROM test_table;
-    #         """)
-    # rows = cur.fetchall()
-    # for row in rows:
-    #     print(row)
-    # conn.commit()
-    # cur.close()
-    # fname =
-    # lname =  
