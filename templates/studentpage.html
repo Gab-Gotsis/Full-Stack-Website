@@ -7,7 +7,6 @@
 </head>
 
 <body>
-<!-- <element onload="myfunction_onload"> -->
 <input type="submit" onclick='goback()' value="Go Back"> <span class="br"></span>  
 <label for="fname">Enter Student First Name:</label>
 <input type="text" id="fname" name="fname" value={{fn}}><span class="br"></span>  
@@ -19,87 +18,76 @@
 <input type="text" id="phonenumber" name="phonenumber" value={{ph}}><span class="br"></span>  
 <label for="stars">Enter Student's Stars:</label>
 <input type="number" id="stars" value={{st}}><span class="br"></span>  
-<input type="submit" onclick='changestudentinfo()' id="subbutton" value="Submit changes to student info">
-<input type="submit" onclick='deletestudent()' id="delbutton" value="Delete Student">
+<input type="submit" onclick='changeStudentInfo()' id="subbutton" value="Submit changes to student info">
+<input type="submit" onclick='deleteStudent()' id="delbutton" value="Delete Student">
 
-
-  <p id="feedbackp"></p>
-  <p id="weekshomeworknotdone"></p>
-  <var id="origname" hidden="true">{{fn}}</var>
-<var id="origlname" hidden="true">{{ln}}</var>
-<var id="origyear" hidden="true">{{yr}}</var>
+<p id="feedbackp"></p>
+<p id="weekshomeworknotdone"></p>
 
 <textarea id="feedback" name="new feedback" rows="4" cols="50"></textarea><span class="br"></span>  
 <label for="weeksdone">Weeks of Homework Done:</label><span class="br"></span>  
 <input type="number" id="weeksdone" value="0"> <span class="br"></span>  
-<input type="submit" onclick="addfeedback()" id="fedbutton" value="Add New Feedback"> <span class="br"></span>  
-<input type="submit" onclick="editfeedback()" id="editfedbutton" value="Edit Feedback"> <span class="br"></span>
+<input type="submit" onclick="addFeedback()" id="fedbutton" value="Add New Feedback"> <span class="br"></span>  
+<input type="submit" onclick="editFeedback()" id="editfedbutton" value="Edit Feedback"> <span class="br"></span>
 
 
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 <script>
-  //get fb
   $("document").ready(function(){
-    getstudentinfo();
+    getStudentInfo();
   });
 
-  function getstudentinfo(){
+  function getStudentInfo(){
     var fn = document.getElementById("fname").value
     var ln = document.getElementById("lname").value
     var year = document.getElementById("year").value
-          //works!
     $.post("/studentinfo", {fname: fn, lname: ln, yr: year}, success=function(response){
         feedback = ""
         for (var i = 0; i < response['feedback'].length; i++){
             feedback += response['feedback'][i][1] + " Feedback: " + response['feedback'][i][0] + "<br>";
         }
-        //get the last week, then check the homework
         lastweek = response['feedback'][response['feedback'].length - 1][2]
-
-
         document.getElementById("feedbackp").innerHTML = feedback;
         document.getElementById("weekshomeworknotdone").innerHTML = "Weeks of Homework Not Done: " + lastweek; 
         document.getElementById("weeksdone").value = lastweek; 
     });
   }
-  function addfeedback(){
+  function addFeedback(){
     var fn = document.getElementById("fname").value
     var ln = document.getElementById("lname").value
     var year = document.getElementById("year").value
     var feedback = document.getElementById("feedback").value
     var weeksdone = document.getElementById("weeksdone").value
     $.post("/addfeedback", {fname: fn, lname: ln, yr: year, fb: feedback, weeks: weeksdone}, success=function(response){
-        getstudentinfo();
+        getStudentInfo();
     });
-
   }
 
-  //this works!
-  function changestudentinfo(){
-    //Actually the thing with this, we cant use the names since they change, so we should use the og fields passed in?
-    var ogfn = document.getElementById("origname").innerHTML
-    var ogln = document.getElementById("origlname").innerHTML
-    var ogyear = document.getElementById("origyear").innerHTML  
-
+  function changeStudentInfo(){
+    const params = new URLSearchParams(location.search);
+    var ogfn = params.get('fn')
+    var ogln = params.get('ln')
+    var ogyear = params.get('yr')
     var fn = document.getElementById("fname").value
     var ln = document.getElementById("lname").value
     var year = document.getElementById("year").value
     var phone = document.getElementById("phonenumber").value
     var stars = document.getElementById("stars").value
     $.post("/changestudentinfo", {ogfn: ogfn, ogln: ogln, ogyear: ogyear, fname: fn, lname: ln, yr: year, ph: phone, st: stars}, success=function(response){
-        //do something here. i think just override. works for now.
         document.getElementById("fname").value = response['fname']
         document.getElementById("lname").value = response['lname']
         document.getElementById("year").value = response['year']
         document.getElementById("phonenumber").value = response['phone']
         document.getElementById("stars").value = response['stars']
-        document.getElementById("origname").innerHTML = response['fname']
-        document.getElementById("origlname").innerHTML = response['lname']
-        document.getElementById("origyear").innerHTML = response['year']
+        params.set('fn', response['fname']);
+        params.set('ln', response['lname']);
+        params.set('yr', response['year']);
+        window.history.replaceState({}, '', `${location.pathname}?${params}`);
+        window.location.href = location.href;
     });
   }
 
-  function deletestudent(){
+  function deleteStudent(){
     var fn = document.getElementById("fname").value
     var ln = document.getElementById("lname").value
     var year = document.getElementById("year").value
@@ -116,7 +104,7 @@
     document.getElementById("origyear").innerHTML = ""
   }
 
-  function editfeedback(){
+  function editFeedback(){
     var fn = document.getElementById("fname").value
     var ln = document.getElementById("lname").value
     var year = document.getElementById("year").value
@@ -128,10 +116,7 @@
   }
 
   function goback(){
-        // bad that this is cardcoded :>
-      var url = new URL('http://127.0.0.1:5000/')
-      window.location.href = url;}
-
+      var url = new URL(window.location.href)
+      window.location.href = url.origin;}
 </script>
-
 </body>

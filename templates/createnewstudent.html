@@ -6,8 +6,7 @@
     <link href="/styles/style.css" type="text/css" rel="stylesheet">
 </head>
 <body>
-<!-- <element onload="myfunction_onload"> -->
-<input type="submit" onclick='goback()' value="Go Back">
+<input type="submit" onclick='goback()' value="Go Back"> <br><br>
 <label for="fname">Student First Name:</label>
 <input type="text" id="fname" name="fname"><br><br>
 <label for="lname">Student Last Name:</label>
@@ -18,35 +17,32 @@
 <input type="text" id="phonenumber" name="phonenumber"><br><br>
 <label for="stars">Student Stars:</label>
 <input type="number" id="stars" value="0"><br><br>
-<input type="submit" onclick='createstudent()' id="createbutton" value="Create New Student">
-<input type="submit" onclick='deletestudent()' id="delbutton" value="Delete Student">
+<input type="submit" onclick='createStudent()' id="createbutton" value="Create New Student">
+<input type="submit" onclick='deleteStudent()' id="delbutton" value="Delete Student">
 
 <form action="" method="get">
   </form>
 
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
 <script>
-    function createstudent(){
+    function createStudent(){
         var fn = document.getElementById("fname").value
         var ln = document.getElementById("lname").value
         var year = document.getElementById("year").value
         var phone = document.getElementById("phonenumber").value
         var stars = document.getElementById("stars").value
         $.post('/createstudent', {fname: fn, lname: ln, yr: year, ph: phone, st: stars}, success=function(response){
-            alert(response['fname'] + " " + response['lname'] + " has been created");
-        
+            alert(response['fname'] + " " + response['lname'] + " has been created");      
         });}
 
-
-    function deletestudent(){
+    function deleteStudent(){
         var fn = document.getElementById("fname").value
         var ln = document.getElementById("lname").value
         var year = document.getElementById("year").value
         $.post('/deletestudent', {fname: fn, lname: ln, yr: year});}
 
-      function goback(){
-        // bad that this is cardcoded :>
-        var url = new URL('http://127.0.0.1:5000/')
-        window.location.href = url;}
+    function goback(){
+        var url = new URL(window.location.href)
+        window.location.href = url.origin;}
 </script>
 </body>

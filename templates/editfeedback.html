@@ -6,7 +6,6 @@
     <link href="/styles/style.css" type="text/css" rel="stylesheet">
 </head>
 <body>
-<!-- <element onload="myfunction_onload"> -->
 <input type="submit" onclick='goback()' value="Go Back"> <span class="br"></span>
 <label for="fname">Student First Name:</label>
 <label id="fname" name="fname">{{fn}}</label><span class="br"></span> 
@@ -16,11 +15,10 @@
 <label id="year" name="year">{{yr}}</label><span class="br"></span> 
 <label for="feedbackweek">Enter Date Of Weeks Feedback:</label>
 <input type="text" id="feedbackweek" name="feedbackweek">
-<input type="submit" onclick='selectfeedback()' id="subbutton" value="Select Feedback"><span class="br"></span>
-
+<input type="submit" onclick='selectFeedback()' id="subbutton" value="Select Feedback"><span class="br"></span>
 <textarea id="feedback" name="new feedback" rows="4" cols="50"></textarea><span class="br"></span> 
-<input type="submit" onclick='submitfeedbackchange()' id="subbutton" value="Submit Feedback Change"><span class="br"></span>
-<input type="submit" onclick="deletefeedback()" id="delbutton" value="Delete Selected Feedback"><span class="br"></span>
+<input type="submit" onclick='submitFeedbackChange()' id="subbutton" value="Submit Feedback Change"><span class="br"></span>
+<input type="submit" onclick="deleteFeedback()" id="delbutton" value="Delete Selected Feedback"><span class="br"></span>
 
 <p id="feedbackp"></p>
 <p id="weekshomeworknotdone"></p>
@@ -30,29 +28,25 @@
 
 <script>
  $("document").ready(function(){
-    getstudentinfo();
+    getStudentInfo();
   });
 
-  function getstudentinfo(){
+  function getStudentInfo(){
     var fn = document.getElementById("fname").innerHTML
     var ln = document.getElementById("lname").innerHTML
     var year = document.getElementById("year").innerHTML
-          //works!
     $.post("/studentinfo", {fname: fn, lname: ln, yr: year}, success=function(response){
         feedback = ""
         lastweek = ""
         for (var i = 0; i < response['feedback'].length; i++){
             feedback += response['feedback'][i][1] + " Feedback: " + response['feedback'][i][0] + "<br>";
         }
-        //get the last week, then check the homework
         lastweek = response['feedback'][response['feedback'].length - 1][2]
-
-
         document.getElementById("feedbackp").innerHTML = feedback;
         document.getElementById("weekshomeworknotdone").innerHTML = "Weeks of Homework Not Done: " + lastweek;  
     });
   }
-  function selectfeedback(){
+  function selectFeedback(){
     var fn = document.getElementById("fname").innerHTML
     var ln = document.getElementById("lname").innerHTML
     var year = document.getElementById("year").innerHTML
@@ -68,7 +62,7 @@
     });
   } 
 
-  function submitfeedbackchange(){
+  function submitFeedbackChange(){
     var fn = document.getElementById("fname").innerHTML
     var ln = document.getElementById("lname").innerHTML
     var year = document.getElementById("year").innerHTML
@@ -79,21 +73,27 @@
     });
   }
 
-  function deletefeedback(){
+  function deleteFeedback(){
     var fn = document.getElementById("fname").innerHTML
     var ln = document.getElementById("lname").innerHTML
     var year = document.getElementById("year").innerHTML
     var feedbackweek = document.getElementById("feedbackweek").value
     $.post("/deletefeedback", {fname: fn, lname: ln, yr: year, week: feedbackweek}, success=function(response){
-        getstudentinfo();
+        getStudentInfo();
     });
   }
 
   function goback(){
-        // bad that this is cardcoded :>
-      var url = new URL('http://127.0.0.1:5000/')
-      window.location.href = url;}
-
-
+    const params = new URLSearchParams(location.search);
+    var fn = params.get('fn')
+    var ln = params.get('ln')
+    var year = params.get('yr')
+    var url = new URL(window.location.href);
+    url = new URL(url.origin + "/studentpage");
+    url.searchParams.append('fn', fn);
+    url.searchParams.append('ln', ln);
+    url.searchParams.append('yr', year);
+    window.location.href = url;
+    }
 </script>
 
